@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetBoard - Unofficial LeaderBoard of LeetCode</title>
+    <style>
+        .leetcode-card {
+            width: 300px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .left-content {
+            text-align: left;
+        }
+
+        .right-content {
+            text-align: right;
+        }
+
+        .rank {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .solved-count {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .display-picture {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #333;
+        }
+
+        .name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .handle {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .handle {
+        font-size: 16px;
+        color: #999;
+        }
+    </style>
+</head>
+<body>
+<center>
+<h1>LeetBoard</h1>
+{% if msg %}
+<div style="border: 2px solid black;">{{ msg }}</div>
+<br>
+{% endif %}
+<form action="/add" method="POST">
+<input type="text" name="username" placeholder="Add your username">
+<input type="submit" value="Add">
+</form>
+{% for user in users %}
+    <div class="leetcode-card">
+        <div class="left-content">
+            <div class="rank">#{{ user.rank }}</div>
+            <duv class="change" style="color:{% if user.change < 0 %}red{% else %}green{% endif %};">{% if user.change < 0 %}-{% else %}+{% endif %}{{ user.change }}</duv>
+            <img class="display-picture" src="{{ user.dp }}">
+        </div>
+        <div class="right-content">
+            <div class="name">{{ user.name }}</div>
+            <div class="handle">@{{ user.username }}</div>
+            <div class="bio">{{ user.bio }}</div>
+            <div><a href="/update?id={{ user.id }}" style="color:green;">Update</a></div>
+        </div>
+    </div>
+{% endfor %}
+</center>
+</body>
+</html>
