@@ -67,8 +67,8 @@ def _update():
     user = User.query.filter_by(id=id).first()
     if not user:
         return redirect("/")
-    if datetime.utcnow() > datetime.utcnow() - timedelta(days=1):
-        return redirect("/?msg=Profile Already Updatet within a day")
+    if user.update > datetime.utcnow() - timedelta(days=1):
+        return redirect("/?msg=Profile Already Updated within a day")
     fetched = leetcode_profile(user.username)
     user.change = user.rank - fetched["ranking"]
     user.rank = fetched["ranking"]
