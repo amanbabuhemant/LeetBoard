@@ -74,7 +74,7 @@
 <input type="submit" value="Add">
 </form>
 {% for user in users %}
-    <div class="leetcode-card">
+    <div class="leetcode-card" id="{{ user.username }}">
         <div class="left-content">
             <div class="rank">#{{ user.rank }}</div>
             <duv class="change" style="color:{% if user.change < 0 %}red{% else %}green{% endif %};">{% if user.change < 0 %}-{% else %}+{% endif %}{{ user.change }}</duv>

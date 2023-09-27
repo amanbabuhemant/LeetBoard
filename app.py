@@ -1,6 +1,6 @@
 from requests import get
 from functools import lru_cache
-import json
+from json import loads
 from flask import Flask, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
@@ -38,6 +38,16 @@ class User(db.Model):
     def __gt__(user, other):
         return not user.rank > other.rank
 
+class History(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String)
+    rank = db.Column(db.Integer)
+    date = db.Column(db.Date, default=datetime.utcnow().date)
+    
+    @classmethod
+    def _for(history, username):
+        return history.query.filter_by(username=username).order_by(history.date).all()
+
 def leetcode_profile(username):
     url = "https://leetcode.com/" + username
     page = get(url)
@@ -48,7 +58,7 @@ def leetcode_profile(username):
     page = page[page.find(user)-1000:page.find(user)+1000]
     #solutions = page[page.find("{\"matchedUser\":")+15:page.find("{\"matchedUser\":") + page[page.find("{\"matchedUser\":"):].find("}")+2]
     #solutions of the user will be added in soon
-    user = json.loads(user)
+    user = loads(user)
     return user
 
 @app.route("/")
@@ -77,8 +87,11 @@ def _update():
     user.bio = fetched["aboutMe"]
     user.country = fetched["countryName"]
     user.update = datetime.utcnow()
+    
+    db.session.add(History(username=user.username, rank=user.rank))
+    
     db.session.commit()
-    return redirect("/?msg=Profile updated succesfuly")
+    return redirect("/?msg=Profile updated succesfuly#" + username)
 
 @app.route("/add", methods=["POST"])
 def _add():
@@ -99,9 +112,10 @@ def _add():
         bio = fetched["aboutMe"],
         country = fetched["countryName"],
     )
+    db.session.add(History(username=user.username, rank=user.rank))
     db.session.add(user)
     db.session.commit()
-    return redirect("/?msg= " + username + "'s Profile added!!")
+    return redirect("/?msg= " + username + "'s Profile added!!#" + username)
 
 if __name__ == "__main__":
     app.run()
