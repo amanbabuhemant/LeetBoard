@@ -1,5 +1,4 @@
 from requests import get
-from functools import lru_cache
 from json import loads
 from flask import Flask, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
@@ -49,6 +48,8 @@ class History(db.Model):
         return history.query.filter_by(username=username).order_by(history.date).all()
 
 def leetcode_profile(username):
+    if username in lcrr:
+        return None
     url = "https://leetcode.com/" + username
     page = get(url)
     if not page.ok:
@@ -61,11 +62,22 @@ def leetcode_profile(username):
     user = loads(user)
     return user
 
+lcrr = {
+    'acounts', 'assessment', 'bugbounty',
+    'business', 'contest', 'discuss',
+    'explore', 'jobs', 'playground',
+    'privacy', 'problems', 'problemset',
+    'region', 'store', 'student',
+    'submissions', 'subscribe', 'subscription',
+    'support', 'terms',
+}
+
+
 @app.route("/")
 def _home():
     users = User.query.order_by(User.rank).all()
     msg = request.args.get("msg")
-    return render_template("home.html", users=users, msg=msg)
+    return render_template("home.html", users=users, History=History, msg=msg)
 
 @app.route("/update")
 def _update():
@@ -91,14 +103,14 @@ def _update():
     db.session.add(History(username=user.username, rank=user.rank))
     
     db.session.commit()
-    return redirect("/?msg=Profile updated succesfuly#" + username)
+    return redirect("/?msg=Profile updated succesfuly#" + user.username)
 
-@app.route("/add", methods=["POST"])
+@app.route("/-add", methods=["POST"])
 def _add():
     username = request.form.get("username")
     if not username:
         return redirect("/")
-    username = username.strip().replace("@", "").lower()
+    username = username.strip().replace("@", "").replace("/", "").lower()
     if user := User.query.filter_by(username=username).first():
         return redirect("/update?id=" + str(user.id))
     fetched = leetcode_profile(username)
@@ -118,4 +130,4 @@ def _add():
     return redirect("/?msg= " + username + "'s Profile added!!#" + username)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

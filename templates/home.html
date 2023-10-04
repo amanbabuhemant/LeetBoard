@@ -32,6 +32,9 @@
             color: #333;
         }
 
+        .on-site-rank {
+            color: #444;
+        }
         .solved-count {
             margin-top: 10px;
             font-size: 14px;
@@ -69,13 +72,14 @@
 <div style="border: 2px solid black;">{{ msg }}</div>
 <br>
 {% endif %}
-<form action="/add" method="POST">
+<form action="/-add" method="POST">
 <input type="text" name="username" placeholder="Add your username">
 <input type="submit" value="Add">
 </form>
 {% for user in users %}
     <div class="leetcode-card" id="{{ user.username }}">
         <div class="left-content">
+            <div class="on-site-rank"><abbr title="On site rank">#{{ loop.index }}</abbr></div>
             <div class="rank">#{{ user.rank }}</div>
             <duv class="change" style="color:{% if user.change < 0 %}red{% else %}green{% endif %};">{% if user.change < 0 %}-{% else %}+{% endif %}{{ user.change }}</duv>
             <img class="display-picture" src="{{ user.dp }}">
@@ -87,6 +91,15 @@
             <div><a href="/update?id={{ user.id }}" style="color:green;">Update</a></div>
         </div>
     </div>
+    <details style="text-align:center;margin:auto;">
+    <summary>History</summary>
+    <table style="display:inline;">
+    <tr><td>Date</td><td>Rank</td></tr>
+    {% for rank in History._for(user.username)[::-1] %}
+    	<tr><td>{{ rank.date }}&nbsp;&nbsp;</td><td>&nbsp;&nbsp;#{{ rank.rank }}</td></tr>
+    {% endfor %}
+    </table>
+    </details>
 {% endfor %}
 </center>
 </body>
