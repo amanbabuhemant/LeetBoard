@@ -1,8 +1,8 @@
 from requests import get
 from json import loads
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 app = Flask("LeetBoard")
 
@@ -60,6 +60,8 @@ def leetcode_profile(username):
     #solutions = page[page.find("{\"matchedUser\":")+15:page.find("{\"matchedUser\":") + page[page.find("{\"matchedUser\":"):].find("}")+2]
     #solutions of the user will be added in soon
     user = loads(user)
+    if user["ranking"] == 5000001:
+        user["ranking"] = 5000000
     return user
 
 lcrr = {
@@ -90,10 +92,13 @@ def _update():
     if not user:
         return redirect("/")
     if user.update > datetime.utcnow() - timedelta(days=1):
-        return redirect("/?msg=Profile Already Updated within a day")
+        return redirect("/?msg=Profile Already Updated within a day#" + user.username)
     fetched = leetcode_profile(user.username)
     user.change = user.rank - fetched["ranking"]
     user.rank = fetched["ranking"]
+    if user.dp != fetched["userAvatar"]:
+        with open("dp/" + user.username + ".jpg", 'w') as f:
+            f.write(get(fetched["userAvatar"]).content)
     user.dp = fetched["userAvatar"]
     user.name = fetched["realName"]
     user.bio = fetched["aboutMe"]
@@ -116,6 +121,8 @@ def _add():
     fetched = leetcode_profile(username)
     if not fetched:
         return redirect("/?msg=User not found")
+    with open("dp/" + username + ".jpg", 'wb') as f:
+        f.write(get(fetched["userAvatar"]).content)
     user = User(
         username = username,
         rank = fetched["ranking"],
@@ -124,10 +131,14 @@ def _add():
         bio = fetched["aboutMe"],
         country = fetched["countryName"],
     )
-    db.session.add(History(username=user.username, rank=user.rank))
+    db.session.add(History(username=user.username, rank=user.rank, date=date.today()))
     db.session.add(user)
     db.session.commit()
     return redirect("/?msg= " + username + "'s Profile added!!#" + username)
+
+@app.route("/-dp/<username>.jpg")
+def _dp(username):
+    return send_from_directory("dp", username + ".jpg")
 
 if __name__ == "__main__":
     app.run(debug=True)

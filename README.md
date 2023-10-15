@@ -2,7 +2,7 @@
 
 LeetBoard is a Python-based project that allows users to create and maintain a leaderboard for LeetCode profiles. With LeetBoard, you can add, update, and view rankings for LeetCode users. It's a fun and interactive way to track your progress and compete with friends or colleagues on LeetCode.
 
-Visit [LeetBoard - LeetCode Leaderboard](http://leetboard.artizote.com)!
+Visit [http://LeetBoard.artizote.com](http://leetboard.artizote.com)!
 
 ## Features
 
@@ -16,7 +16,7 @@ To run LeetBoard locally or contribute to the project, follow these steps:
 1. Clone this repository to your local machine:
 
    ```shell
-   git clone https://github.com/yourusername/leetboard.git
+   git clone https://github.com/amanbabuhemant/leetboard.git
    ```
 
 2. Install the required Python packages listed in `requirements.txt` using pip:
@@ -28,7 +28,7 @@ To run LeetBoard locally or contribute to the project, follow these steps:
 3. Run the LeetBoard application:
 
    ```shell
-   python leetboard.py
+   python app.py
    ```
    or
    ```shell

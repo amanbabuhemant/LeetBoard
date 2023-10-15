@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeetBoard - Unofficial LeaderBoard of LeetCode</title>
     <style>
+        html {
+           scroll-behavior: smooth;
+        }
         .leetcode-card {
             width: 300px;
             border: 1px solid #ccc;
@@ -82,7 +85,7 @@
             <div class="on-site-rank"><abbr title="On site rank">#{{ loop.index }}</abbr></div>
             <div class="rank">#{{ user.rank }}</div>
             <duv class="change" style="color:{% if user.change < 0 %}red{% else %}green{% endif %};">{% if user.change < 0 %}-{% else %}+{% endif %}{{ user.change }}</duv>
-            <img class="display-picture" src="{{ user.dp }}">
+            <img class="display-picture" src="/-dp/{{ user.username }}.jpg">
         </div>
         <div class="right-content">
             <div class="name">{{ user.name }}</div>
